@@ -1773,6 +1773,172 @@ async function GetAssetsByOwner() {
     console.log("cnfts ", cnfts);
 }
 
+
+// deactivate a helper alt
+async function altDeactivate(_alt_,_helius_,_close_=false) {
+  
+  console.log("deactivate helper: "+_alt_);
+  let connection = new solanaWeb3.Connection(_helius_, "confirmed");
+  let alt_address = new solanaWeb3.PublicKey(_alt_);
+  let deactiveALTIx = solanaWeb3.AddressLookupTableProgram.deactivateLookupTable({
+  authority: provider.publicKey,lookupTable: alt_address,});
+  
+  let messageV0 = new solanaWeb3.TransactionMessage({
+    payerKey: provider.publicKey,
+    recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+    instructions: [deactiveALTIx],
+  }).compileToV0Message([]);  
+  
+  let tx = new solanaWeb3.VersionedTransaction(messageV0);
+  console.log("deactivating...", _alt_);
+  
+  try {
+    let signature = null;
+    let signedTx = null;
+    if(keypair!=null){
+      tx.sign([provider]);
+      signature = await connection.sendTransaction(tx);
+    }
+    else{
+      signedTx = await provider.signTransaction(tx);
+      signature = await connection.sendTransaction(signedTx);
+    }
+    console.log("signature: ", signature);
+    console.log("finalizing deactivation...", _alt_);
+    let i = 0;
+    const finalize_deactivation = setInterval(async function() {
+      let tx_status = await connection.getSignatureStatuses([signature],{searchTransactionHistory:true})
+      .catch(function(){});
+      if (typeof tx_status == "undefined" || 
+      typeof tx_status.value == "undefined" || 
+      tx_status.value == null || 
+      tx_status.value[0] == null || 
+      typeof tx_status.value[0] == "undefined" || 
+      typeof tx_status.value[0].confirmationStatus == "undefined") {
+        
+      } 
+      else if(tx_status.value[0].confirmationStatus=="finalized") {
+        clearInterval(finalize_deactivation);
+        console.log("helper deactivated: ", _alt_);
+        // check slots to close
+        let cs = 0;
+        if(_close_==false){
+          console.log("waiting to close...", _alt_);
+          const check_slots = setInterval(async function() {
+          let closing = await altClose(_alt_,_helius_);
+          if(closing=="ok"){
+            clearInterval(check_slots);
+            console.log("done");
+          }
+          else if(Number.isInteger(closing)){
+            console.log("wait time: "+closing+" blocks...");
+          }
+          else{
+            clearInterval(check_slots);
+            console.log("...");
+  //               console.log("there may have been a problem closing the alt");
+  //               console.log("try running the following command to find out");
+  //               console.log("npm run mcburn close "+_alt_);
+          }
+          cs++;
+          if(cs==10){
+            clearInterval(check_slots);
+            console.log("exceeded retry limit! ", _alt_);
+            console.log("done");
+          }
+        },60000);
+        }
+      }
+      i++;
+      if(i==20){
+        clearInterval(finalize_deactivation);
+        console.log("exceeded retry limit! ", _alt_);
+        console.log("done");
+      }
+    }, 3000);
+  } 
+  catch(error) {
+    console.log("error : ", _alt_);
+    console.log("Error: ", error);
+    error = JSON.stringify(error);
+    error = JSON.parse(error);
+    console.log("Error Logs: ", error);
+    return;
+  }
+  
+}
+
+// close a helper alt and recover the rent
+async function altClose(_alt_,_helius_) {
+  let connection = new solanaWeb3.Connection(_helius_,"confirmed");
+  let alt_address = new solanaWeb3.PublicKey(_alt_);
+  let closeALTIx = solanaWeb3.AddressLookupTableProgram.closeLookupTable({
+    authority: provider.publicKey,
+    lookupTable: alt_address,
+    recipient: provider.publicKey,
+  });
+  let messageV0 = new solanaWeb3.TransactionMessage({
+    payerKey: provider.publicKey,
+    recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+    instructions: [closeALTIx],
+  }).compileToV0Message([]);  
+  let tx = new solanaWeb3.VersionedTransaction(messageV0);
+  console.log("attempting to close... ", _alt_);
+  try {
+    let signature = null;
+    let signedTx = null;
+    if(keypair!=null){
+      tx.sign([provider]);
+      signature = await connection.sendTransaction(tx);
+    }
+    else{
+      signedTx = await provider.signTransaction(tx);
+      signature = await connection.sendTransaction(signedTx);
+    }
+    console.log("signature: ", signature);
+    console.log("finalizing rent recovery... ", _alt_);
+    let i = 0;
+    const finalize_recovery = setInterval(async function() {
+      let tx_status = await connection.getSignatureStatuses([signature],{searchTransactionHistory:true})
+      .catch(function(){});
+      if (typeof tx_status == "undefined" || 
+      typeof tx_status.value == "undefined" || 
+      tx_status.value == null || 
+      tx_status.value[0] == null || 
+      typeof tx_status.value[0] == "undefined" || 
+      typeof tx_status.value[0].confirmationStatus == "undefined") {
+        
+      } 
+      else if(tx_status.value[0].confirmationStatus=="finalized") {
+        clearInterval(finalize_recovery);
+        console.log("alt closed: ", _alt_);
+        console.log("funds recovered: ", _alt_);
+        console.log("done");
+        return "ok";
+      }
+      i++;
+      if(i==30){
+        clearInterval(finalize_recovery);
+        console.log("exceeded retry limit! ", _alt_);
+      }
+    }, 3000);
+  }
+  catch(error) {
+    for (let i = 0; i < error.logs.length; i++) {
+      if(error.logs[i].includes("Table cannot be closed")){
+        let str = error.logs[i];
+        str = str.replace(/[^\d.]/g,'');
+        str = parseInt(str);
+        return str;
+      }
+    }
+    console.log("error!");
+    console.log(error);
+    return;
+  }
+}
+
+
 $('#thingButton').on('click', () => {
     console.log('Working ...');
     // InitializeSwap();
