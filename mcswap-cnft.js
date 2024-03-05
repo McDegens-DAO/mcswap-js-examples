@@ -109,7 +109,7 @@ $('#connectButtonSolflare').on('click', () => {
 
 async function connectRPC() {
     connection = new solanaWeb3.Connection(
-        "https://rpc.helius.xyz/?api-key=YOUR_KEY_HERE",
+        "https://rpc.helius.xyz/?api-key=HELIUS_KEY",
         'confirmed',
     );
     console.log("Connected to rpc");
@@ -124,9 +124,9 @@ async function InitializeSwap() {
     console.log("Provider Pubkey: ", provider.publicKey.toString());
     
     // these are passed
-    let assetId = "6Vk5JXztMEJF12JSGsrKcYfCd5rKVyt44BPaKvbv66WU";
+    let assetId = "8rbKH6o4dNGqGJA8NLTFyityY1rTKTekwEMNpRXn9TBK";  // 148
     // let swapAssetId = "11111111111111111111111111111111";  // This should be the value of swapAssetId if NOT swapping
-    let swapAssetId = "G8WwLEGDjY659NMLNHDBLyvKQJk9WGJZ4TQp7p4pLHdF";
+    let swapAssetId = "64XvySfcEUxs9giDuk2agLNJQwEyuZQ2EgY3yeMvcA74";
     let taker = "CNcovwf5CbuMHVDofbDVxTtsEAQxmWUgfGeQDS3MnmWH";     
     let swapLamports = 1000;
     
@@ -145,7 +145,7 @@ async function InitializeSwap() {
         isSwap = false
     }
 
-    let heliusUrl = "https://rpc.helius.xyz/?api-key=YOUR_KEY_HERE";
+    let heliusUrl = "https://rpc.helius.xyz/?api-key=HELIUS_KEY";
 
     // let cNFTSwapProgramId = new solanaWeb3.PublicKey("ABDXeLg3NiQKf7xRyEjZ3HTCTP1dWezCAjVmxJ8NdWz1"); // v0
     // let cNFTSwapProgramId = new solanaWeb3.PublicKey("8Tg1SpWz9JNr5praJssiALNs3G6GQU5qvuoxf85aRh74"); // v1
@@ -425,33 +425,39 @@ async function InitializeSwap() {
         uarray[counter++] = 0;
     }
     
+    let arr;
+    let byte;
+    
     let assetIdb58 = bs58.decode(assetId);
-    var arr = Array.prototype.slice.call(Buffer.from(assetIdb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(assetIdb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
     
     let rootb58 = bs58.decode(getAssetProof.data.result.root);
-    var arr = Array.prototype.slice.call(Buffer.from(rootb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(rootb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
     
     let datahashb58 = bs58.decode(getAsset.data.result.compression.data_hash);
-    var arr = Array.prototype.slice.call(Buffer.from(datahashb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(datahashb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
     
     let creatorhashb58 = bs58.decode(getAsset.data.result.compression.creator_hash);
-    var arr = Array.prototype.slice.call(Buffer.from(creatorhashb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(creatorhashb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
-    var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
-    for ( var index = 0; index < byteArray.length; index ++ ) {
-        var byte = getAsset.data.result.compression.leaf_id & 0xff;
+    let byteArray;
+    let index;
+    
+    byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
+    for ( index = 0; index < byteArray.length; index ++ ) {
+        byte = getAsset.data.result.compression.leaf_id & 0xff;
         byteArray [ index ] = byte;
         getAsset.data.result.compression.leaf_id = (getAsset.data.result.compression.leaf_id - byte) / 256 ;
     }
@@ -460,53 +466,53 @@ async function InitializeSwap() {
     }
     
     let swapAssetIdb58 = bs58.decode(swapAssetId);
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetIdb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetIdb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     // HERE
     let swapTreeId58 = bs58.decode(swapTreeId);
-    var arr = Array.prototype.slice.call(Buffer.from(swapTreeId58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapTreeId58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
     
     let swapAssetRootb58 = bs58.decode(swapRoot);
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetRootb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetRootb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
     
     let swapAssetDatahashb58 = bs58.decode(swapDatahash); 
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetDatahashb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetDatahashb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
     
     let swapAssetCreatorhashb58 = bs58.decode(swapCreatorhash); 
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetCreatorhashb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetCreatorhashb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     // HERE
     let swapAssetOwnerb58 = bs58.decode(swapAssetOwner); 
-    var arr = Array.prototype.slice.call(Buffer.from(swapAssetOwnerb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapAssetOwnerb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
     // HERE
     let swapDelegateb58 = bs58.decode(swapDelegate); 
-    var arr = Array.prototype.slice.call(Buffer.from(swapDelegateb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapDelegateb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
     
-    var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
-    for ( var index = 0; index < byteArray.length; index ++ ) {
-        var byte = swapLeafId & 0xff;
+    byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
+    for ( index = 0; index < byteArray.length; index ++ ) {
+        byte = swapLeafId & 0xff;
         byteArray [ index ] = byte;
         swapLeafId = (swapLeafId - byte) / 256 ;
     }
@@ -516,9 +522,9 @@ async function InitializeSwap() {
 
     uarray[counter++] = proof.length;
 
-    var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
-    for ( var index = 0; index < byteArray.length; index ++ ) {
-        var byte = swapLamports & 0xff;
+    byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
+    for ( index = 0; index < byteArray.length; index ++ ) {
+        byte = swapLamports & 0xff;
         byteArray [ index ] = byte;
         swapLamports = (swapLamports - byte) / 256 ;
     }
@@ -527,14 +533,14 @@ async function InitializeSwap() {
     }
 
     let swapTokenMintb58 = bs58.decode(swapTokenMint.toString());
-    var arr = Array.prototype.slice.call(Buffer.from(swapTokenMintb58), 0);
+    arr = Array.prototype.slice.call(Buffer.from(swapTokenMintb58), 0);
     for (let i = 0; i < arr.length; i++) {
         uarray[counter++] = arr[i];
     }
 
-    var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
-    for ( var index = 0; index < byteArray.length; index ++ ) {
-        var byte = swapTokens & 0xff;
+    byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
+    for ( index = 0; index < byteArray.length; index ++ ) {
+        byte = swapTokens & 0xff;
         byteArray [ index ] = byte;
         swapTokens = (swapTokens - byte) / 256 ;
     }
@@ -577,79 +583,88 @@ async function InitializeSwap() {
     });
     console.log("Initialize Swap Ix: ", initializeSwapIx);
         
-    const slot = await connection.getSlot();
-    const [createALTIx, lookupTableAddress] =
-    solanaWeb3.AddressLookupTableProgram.createLookupTable({
-        authority: provider.publicKey,
-        payer: provider.publicKey,
-        recentSlot: slot,
-    });
-    console.log("Lookup Table Address", lookupTableAddress.toBase58(), lookupTableAddress);
-
-    let proofPubkeys = [];
-    for (let i = 0; i < proof.length; i++) {
-        proofPubkeys.push(proof[i].pubkey);
-	}
-    console.log("proofPubkeys ", proofPubkeys);
-
-    const extendALTIx = solanaWeb3.AddressLookupTableProgram.extendLookupTable({
-        payer: provider.publicKey,
-        authority: provider.publicKey,
-        lookupTable: lookupTableAddress,
-        addresses: [
-            // HERE
-            // cNFTSwapProgramId,
-            // solanaWeb3.SystemProgram.programId,
-            // mplBubblegum.PROGRAM_ID,
-            // solanaAccountCompression.PROGRAM_ID,
-            // solanaAccountCompression.SPL_NOOP_PROGRAM_ID,
-            // swapVaultPDA[0],
-            // devTreasury,
-            // mcDegensTreasury,
-            ...proofPubkeys,
-        ],
-    });
-    console.log("extendALTIx ", extendALTIx);
-
+    // HERE BEGIN - I rearranged this section (see Rearrange END)
     // let msLookupTable = new solanaWeb3.PublicKey("ETunTW1EtRgZVuUGAhzjmzAWibsJ4h8CYQ13nMVirXtk"); // devnet
-    let msLookupTable = new solanaWeb3.PublicKey("6rztYc8onxK3FUku97XJrzvdZHqWavwx5xw8fB7QufCA"); // mainnet    
-	const msLookupTableAccount = await connection
-		.getAddressLookupTable(msLookupTable)
-		.then((res) => res.value);
-    if (!msLookupTableAccount) {
-        console.log("Could not fetch McSwap ALT!");
-        return;
-    }    
+    let msLookupTable = new solanaWeb3.PublicKey("6rztYc8onxK3FUku97XJrzvdZHqWavwx5xw8fB7QufCA"); // mainnet
+    let lookupTableAccount = null;
+    if (proof.length > 3) {
+        const slot = await connection.getSlot();
+        const [createALTIx, lookupTableAddress] =
+        solanaWeb3.AddressLookupTableProgram.createLookupTable({
+            authority: provider.publicKey,
+            payer: provider.publicKey,
+            recentSlot: slot,
+        });
+        console.log("Lookup Table Address", lookupTableAddress.toBase58(), lookupTableAddress);
 
-    let mcswapMessageV0 = new solanaWeb3.TransactionMessage({
-        payerKey: provider.publicKey,
-        recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-        instructions: [createALTIx, extendALTIx],
-    }).compileToV0Message([msLookupTableAccount]);
+        let proofPubkeys = [];
+        for (let i = 0; i < proof.length; i++) {
+            proofPubkeys.push(proof[i].pubkey);
+        }
+        console.log("proofPubkeys ", proofPubkeys);
 
-    const createALTTx = new solanaWeb3.VersionedTransaction(mcswapMessageV0);
-    try {
-        let signedTx = await provider.signTransaction(createALTTx);
-        const txId = await connection.sendTransaction(signedTx);
-        console.log("Signature: ", txId)
-        console.log(`https://solscan.io/tx/${txId}?cluster=mainnet`);
-    } catch(error) {
-        console.log("Error: ", error)
-        error = JSON.stringify(error);
-        error = JSON.parse(error);
-        console.log("Error Logs: ", error)
-        return;
+        const extendALTIx = solanaWeb3.AddressLookupTableProgram.extendLookupTable({
+            payer: provider.publicKey,
+            authority: provider.publicKey,
+            lookupTable: lookupTableAddress,
+            addresses: [
+                // HERE
+                // cNFTSwapProgramId,
+                // solanaWeb3.SystemProgram.programId,
+                // mplBubblegum.PROGRAM_ID,
+                // solanaAccountCompression.PROGRAM_ID,
+                // solanaAccountCompression.SPL_NOOP_PROGRAM_ID,
+                // swapVaultPDA[0],
+                // devTreasury,
+                // mcDegensTreasury,
+                ...proofPubkeys,
+            ],
+        });
+        console.log("extendALTIx ", extendALTIx);
+
+        const msLookupTableAccount = await connection
+            .getAddressLookupTable(msLookupTable)
+            .then((res) => res.value);
+        if (!msLookupTableAccount) {
+            console.log("Could not fetch McSwap ALT!");
+            return;
+        }    
+
+        let mcswapMessageV0 = new solanaWeb3.TransactionMessage({
+            payerKey: provider.publicKey,
+            recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+            instructions: [createALTIx, extendALTIx],
+        }).compileToV0Message([msLookupTableAccount]);
+
+        const createALTTx = new solanaWeb3.VersionedTransaction(mcswapMessageV0);
+        try {
+            let signedTx = await provider.signTransaction(createALTTx);
+            const txId = await connection.sendTransaction(signedTx);
+            console.log("Signature: ", txId)
+            console.log(`https://solscan.io/tx/${txId}?cluster=mainnet`);
+        } catch(error) {
+            console.log("Error: ", error)
+            error = JSON.stringify(error);
+            error = JSON.parse(error);
+            console.log("Error Logs: ", error)
+            return;
+        }
+
+        await new Promise(_ => setTimeout(_, 10000));
+
+        lookupTableAccount = await connection
+            .getAddressLookupTable(lookupTableAddress)
+            .then((res) => res.value);    
+    } else {        
+        lookupTableAccount = await connection
+            .getAddressLookupTable(msLookupTable)
+            .then((res) => res.value);    
     }
-
-    await new Promise(_ => setTimeout(_, 10000));
-    
-    const lookupTableAccount = await connection
-        .getAddressLookupTable(lookupTableAddress)
-        .then((res) => res.value);    
     if (!lookupTableAccount) {
         console.log("Could not fetch ALT!");
         return;
     }
+    // HERE Rearrange END
 
     let messageV0 = null;
     if (createTokenATA == true) {
@@ -696,15 +711,15 @@ async function SwapcNFTs() {
     console.log("Provider Pubkey: ", provider.publicKey.toString());
     
     // these are passed
-    let assetId = "6Vk5JXztMEJF12JSGsrKcYfCd5rKVyt44BPaKvbv66WU";
+    let assetId = "8rbKH6o4dNGqGJA8NLTFyityY1rTKTekwEMNpRXn9TBK";  // 148
     // let swapAssetId = "11111111111111111111111111111111";  // This should be the value of swapAssetId if NOT swapping
-    let swapAssetId = "G8WwLEGDjY659NMLNHDBLyvKQJk9WGJZ4TQp7p4pLHdF";
+    let swapAssetId = "64XvySfcEUxs9giDuk2agLNJQwEyuZQ2EgY3yeMvcA74";
     console.log("assetId ", assetId);
     console.log("swapAssetId ", swapAssetId);
 
-    let heliusUrl = "https://rpc.helius.xyz/?api-key=YOUR_KEY_HERE";
+    let heliusUrl = "https://rpc.helius.xyz/?api-key=HELIUS_KEY";
     let cNFTSwapProgramId = new solanaWeb3.PublicKey("6RUcK9T1hYAZGBxN82ERVDUi4vLAX4hN1zAyy3cU5jav"); // v2
-    
+
     // HERE  now reading the following 3 vars from program state
     // let devTreasury = new solanaWeb3.PublicKey("2Gs1H87sQDmHS91iXaVQnhdWTGzsgo2vypAwdDRJTLqX");
     // let mcDegensTreasury = new solanaWeb3.PublicKey("GUFxwDrsLzSQ27xxTVe4y9BARZ6cENWmjzwe8XPy7AKu");
@@ -1076,8 +1091,7 @@ async function SwapcNFTs() {
     ];
     for (let i = 0; i < proof.length; i++) {
         keys.push(proof[i]);
-    }
-    
+    }    
     if (isSwap == true) {
         for (let i = 0; i < swapProof.length; i++) {
             keys.push(swapProof[i]);
@@ -1094,141 +1108,151 @@ async function SwapcNFTs() {
     });
     console.log("Swap NFTs Ix: ", swapcNFTsIx);
         
-    const slot = await connection.getSlot();
-    const [createALTIx, lookupTableAddress] =
-    solanaWeb3.AddressLookupTableProgram.createLookupTable({
-        authority: provider.publicKey,
-        payer: provider.publicKey,
-        recentSlot: slot,
-    });
-    console.log("Lookup Table Address", lookupTableAddress.toBase58());
-
-    let proofPubkeys = [];
-    for (let i = 0; i < proof.length; i++) {
-        proofPubkeys.push(proof[i].pubkey);
-	}
-    console.log("proofPubkeys ", proofPubkeys);
-    
-    let swapProofPubkeys = [];
-    if (isSwap == true) {
-        // for (let i = 0; i < swapProof.length; i++) {  HERE
-        for (let i = 0; i < swapProof.length - 1; i++) {  // The magic - 1 :)
-                swapProofPubkeys.push(swapProof[i].pubkey);
-        }
-    }
-    console.log("swapProofPubkeys ", swapProofPubkeys);
-
-    // HERE 
-    let extendALTIx = null;
-    if (isSwap == true) {
-        extendALTIx = solanaWeb3.AddressLookupTableProgram.extendLookupTable({
-            payer: provider.publicKey,
-            authority: provider.publicKey,
-            lookupTable: lookupTableAddress,
-            addresses: [
-                // cNFTSwapProgramId,
-                // solanaWeb3.SystemProgram.programId,
-                // mplBubblegum.PROGRAM_ID,
-                // solanaAccountCompression.PROGRAM_ID,
-                // solanaWeb3.SystemProgram.programId,
-                // splToken.TOKEN_PROGRAM_ID,
-                // devTreasury,
-                // mcDegensTreasury,
-                // provider.publicKey,
-                // new solanaWeb3.PublicKey(swapInitializer),
-                // solanaAccountCompression.SPL_NOOP_PROGRAM_ID,
-                // programStatePDA[0],
-                // swapVaultPDA[0],
-                // swapStatePDA[0],
-                // treeAuthorityPDA,
-                // new solanaWeb3.PublicKey(getAssetProof.data.result.tree_id),
-                // swapTreeAuthorityPDA,
-                // new solanaWeb3.PublicKey(swapTreeId),
-                // initializerTokenATA,
-                ...proofPubkeys,                
-                ...swapProofPubkeys,
-            ],
-        });
-    } else {
-        extendALTIx = solanaWeb3.AddressLookupTableProgram.extendLookupTable({
-            payer: provider.publicKey,
-            authority: provider.publicKey,
-            lookupTable: lookupTableAddress,
-            addresses: [
-                // provider.publicKey,
-                // new solanaWeb3.PublicKey(swapInitializer),
-                // cNFTSwapProgramId,
-                // solanaWeb3.SystemProgram.programId,
-                // mplBubblegum.PROGRAM_ID,
-                // solanaAccountCompression.PROGRAM_ID,
-                // solanaAccountCompression.SPL_NOOP_PROGRAM_ID,
-                // swapVaultPDA[0],
-                // swapStatePDA[0],
-                // devTreasury,
-                // mcDegensTreasury,
-                // treeAuthorityPDA,
-                // new solanaWeb3.PublicKey(getAssetProof.data.result.tree_id),
-                // swapTreeAuthorityPDA,
-                // new solanaWeb3.PublicKey(swapTreeId),
-                // solanaWeb3.SystemProgram.programId,
-                // splToken.TOKEN_PROGRAM_ID,
-                // programStatePDA[0],
-                // initializerTokenATA,
-                ...proofPubkeys,
-            ],
-        });
-    }
-    console.log("extendALTIx ", extendALTIx);
-
+    // HERE BEGIN - I rearranged this section (see Rearrange END)
     // let msLookupTable = new solanaWeb3.PublicKey("ETunTW1EtRgZVuUGAhzjmzAWibsJ4h8CYQ13nMVirXtk"); // devnet
-    let msLookupTable = new solanaWeb3.PublicKey("6rztYc8onxK3FUku97XJrzvdZHqWavwx5xw8fB7QufCA"); // mainnet    
-	const msLookupTableAccount = await connection
-		.getAddressLookupTable(msLookupTable)
-		.then((res) => res.value);
-    if (!msLookupTable) {
-        console.log("Could not fetch McSwap ALT!");
-        return;
-    }    
+    let msLookupTable = new solanaWeb3.PublicKey("6rztYc8onxK3FUku97XJrzvdZHqWavwx5xw8fB7QufCA"); // mainnet
+    let lookupTableAccount = null;
+    if (proof.length + swapProof.length > 6) {
+        const slot = await connection.getSlot();
+        const [createALTIx, lookupTableAddress] =
+        solanaWeb3.AddressLookupTableProgram.createLookupTable({
+            authority: provider.publicKey,
+            payer: provider.publicKey,
+            recentSlot: slot,
+        });
+        console.log("Lookup Table Address", lookupTableAddress.toBase58());
 
-    let mcswapMessageV0 = new solanaWeb3.TransactionMessage({
-        payerKey: provider.publicKey,
-        recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
-        instructions: [createALTIx, extendALTIx],
-    }).compileToV0Message([msLookupTableAccount]);
+        let proofPubkeys = [];
+        for (let i = 0; i < proof.length; i++) {
+            proofPubkeys.push(proof[i].pubkey);
+        }
+        console.log("proofPubkeys ", proofPubkeys);
+        
+        let swapProofPubkeys = [];
+        if (isSwap == true) {
+            // for (let i = 0; i < swapProof.length; i++) {  HERE
+            for (let i = 0; i < swapProof.length - 1; i++) {  // The magic - 1 :)
+                swapProofPubkeys.push(swapProof[i].pubkey);
+            }
+        }
+        console.log("swapProofPubkeys ", swapProofPubkeys);
 
-    const createALTTx = new solanaWeb3.VersionedTransaction(mcswapMessageV0);
-    try {
-        let signedTx = await provider.signTransaction(createALTTx);
-        const txId = await connection.sendTransaction(signedTx);
-        console.log("Signature: ", txId)
-        console.log(`https://solscan.io/tx/${txId}?cluster=mainnet`);
-    } catch(error) {
-        console.log("Error: ", error)
-        error = JSON.stringify(error);
-        error = JSON.parse(error);
-        console.log("Error Logs: ", error)
-        return;
+        // HERE 
+        let extendALTIx = null;
+        if (isSwap == true) {
+            extendALTIx = solanaWeb3.AddressLookupTableProgram.extendLookupTable({
+                payer: provider.publicKey,
+                authority: provider.publicKey,
+                lookupTable: lookupTableAddress,
+                addresses: [
+                    // cNFTSwapProgramId,
+                    // solanaWeb3.SystemProgram.programId,
+                    // mplBubblegum.PROGRAM_ID,
+                    // solanaAccountCompression.PROGRAM_ID,
+                    // solanaWeb3.SystemProgram.programId,
+                    // splToken.TOKEN_PROGRAM_ID,
+                    // devTreasury,
+                    // mcDegensTreasury,
+                    // provider.publicKey,
+                    // new solanaWeb3.PublicKey(swapInitializer),
+                    // solanaAccountCompression.SPL_NOOP_PROGRAM_ID,
+                    // programStatePDA[0],
+                    // swapVaultPDA[0],
+                    // swapStatePDA[0],
+                    // treeAuthorityPDA,
+                    // new solanaWeb3.PublicKey(getAssetProof.data.result.tree_id),
+                    // swapTreeAuthorityPDA,
+                    // new solanaWeb3.PublicKey(swapTreeId),
+                    // initializerTokenATA,
+                    ...proofPubkeys,                
+                    ...swapProofPubkeys,
+                ],
+            });
+        } else {
+            extendALTIx = solanaWeb3.AddressLookupTableProgram.extendLookupTable({
+                payer: provider.publicKey,
+                authority: provider.publicKey,
+                lookupTable: lookupTableAddress,
+                addresses: [
+                    // provider.publicKey,
+                    // new solanaWeb3.PublicKey(swapInitializer),
+                    // cNFTSwapProgramId,
+                    // solanaWeb3.SystemProgram.programId,
+                    // mplBubblegum.PROGRAM_ID,
+                    // solanaAccountCompression.PROGRAM_ID,
+                    // solanaAccountCompression.SPL_NOOP_PROGRAM_ID,
+                    // swapVaultPDA[0],
+                    // swapStatePDA[0],
+                    // devTreasury,
+                    // mcDegensTreasury,
+                    // treeAuthorityPDA,
+                    // new solanaWeb3.PublicKey(getAssetProof.data.result.tree_id),
+                    // swapTreeAuthorityPDA,
+                    // new solanaWeb3.PublicKey(swapTreeId),
+                    // solanaWeb3.SystemProgram.programId,
+                    // splToken.TOKEN_PROGRAM_ID,
+                    // programStatePDA[0],
+                    // initializerTokenATA,
+                    ...proofPubkeys,
+                ],
+            });
+        }
+        console.log("extendALTIx ", extendALTIx);
+
+        const msLookupTableAccount = await connection
+            .getAddressLookupTable(msLookupTable)
+            .then((res) => res.value);
+        if (!msLookupTable) {
+            console.log("Could not fetch McSwap ALT!");
+            return;
+        }    
+
+        let mcswapMessageV0 = new solanaWeb3.TransactionMessage({
+            payerKey: provider.publicKey,
+            recentBlockhash: (await connection.getRecentBlockhash('confirmed')).blockhash,
+            instructions: [createALTIx, extendALTIx],
+        }).compileToV0Message([msLookupTableAccount]);
+
+        const createALTTx = new solanaWeb3.VersionedTransaction(mcswapMessageV0);
+        try {
+            let signedTx = await provider.signTransaction(createALTTx);
+            const txId = await connection.sendTransaction(signedTx);
+            console.log("Signature: ", txId)
+            console.log(`https://solscan.io/tx/${txId}?cluster=mainnet`);
+        } catch(error) {
+            console.log("Error: ", error)
+            error = JSON.stringify(error);
+            error = JSON.parse(error);
+            console.log("Error Logs: ", error)
+            return;
+        }
+
+        await new Promise(_ => setTimeout(_, 10000));
+
+        lookupTableAccount = await connection
+            .getAddressLookupTable(lookupTableAddress)
+            .then((res) => res.value);    
+    } else {
+        lookupTableAccount = await connection
+            .getAddressLookupTable(msLookupTable)
+            .then((res) => res.value);
     }
-
-    await new Promise(_ => setTimeout(_, 10000));
-
-    // HERE Compute unit instructions
-    // Create the priority fee instructions
-    const computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 1,
-    });
-
-    const computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({
-        units: 250_000,
-    });
+    // HERE Rearrange END
     
-    const lookupTableAccount = await connection
-        .getAddressLookupTable(lookupTableAddress)
-        .then((res) => res.value);    
     if (!lookupTableAccount) {
         console.log("Could not fetch ALT!");
         return;
     }
+
+    // HERE Compute unit instructions
+    // Create the priority fee instructions
+    const computePriceIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 100,
+    });
+
+    const computeLimitIx = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({
+        units: 250000,
+    });
 
     // HERE    
     let messageV0 = new solanaWeb3.TransactionMessage({
@@ -1288,7 +1312,7 @@ async function ReverseSwap() {
     console.log("assetId ", assetId);
     console.log("swapAssetId ", swapAssetId);
 
-    let heliusUrl = "https://rpc.helius.xyz/?api-key=YOUR_KEY_HERE";
+    let heliusUrl = "https://rpc.helius.xyz/?api-key=HELIUS_KEY";
 
     // let cNFTSwapProgramId = new solanaWeb3.PublicKey("ABDXeLg3NiQKf7xRyEjZ3HTCTP1dWezCAjVmxJ8NdWz1"); // v1
     let cNFTSwapProgramId = new solanaWeb3.PublicKey("6RUcK9T1hYAZGBxN82ERVDUi4vLAX4hN1zAyy3cU5jav"); // v2
@@ -1481,11 +1505,12 @@ async function UpdateState() {
     console.log("Provider Pubkey: ", provider.publicKey.toString());
 
     // These are passed
-    let newFeeLamports = 25_000_000; // 0
+    let newFeeLamports = 12500000; // 0
     let newDevPercentage = 75; // 0
     let newDevTreasury = "2Gs1H87sQDmHS91iXaVQnhdWTGzsgo2vypAwdDRJTLqX"; // "11111111111111111111111111111111"
     let newMcDegensTreasury = "GUFxwDrsLzSQ27xxTVe4y9BARZ6cENWmjzwe8XPy7AKu";
 
+    // let cNFTSwapProgramId = new solanaWeb3.PublicKey("8Tg1SpWz9JNr5praJssiALNs3G6GQU5qvuoxf85aRh74"); // v1
     let cNFTSwapProgramId = new solanaWeb3.PublicKey("6RUcK9T1hYAZGBxN82ERVDUi4vLAX4hN1zAyy3cU5jav"); // v2
     let cNFTProgramStatePDA = solanaWeb3.PublicKey.findProgramAddressSync(
         [Buffer.from("cNFT-program-state")],
@@ -1635,7 +1660,6 @@ async function ExtendALT() {
     console.log("Provider Pubkey: ", provider.publicKey.toString());
     
     const lookupTableAddress = new solanaWeb3.PublicKey("6NVtn6zJDzSpgPxPRtd6UAoWkDxmuqv2HgCLLJEeQLY");
-    // let heliusUrl = "https://devnet.helius-rpc.com/?api-key=d3a6bf08-f370-4a9f-afc3-e3aa0eb2c25d";
     // let assetId = "D1s95FARscvAUcm9iuv2L8ZAEJZ3m7LAJ1PdeA3pDko9";
 
     // const axiosInstance = axios.create({
@@ -1723,7 +1747,7 @@ async function GetAssetsByOwner() {
     console.log("Connected to wallet");
     console.log("Provider Pubkey: ", provider.publicKey.toString());
 
-    let heliusUrl = "https://devnet.helius-rpc.com/?api-key=d3a6bf08-f370-4a9f-afc3-e3aa0eb2c25d";
+    let heliusUrl = "https://devnet.helius-rpc.com/?api-key=HELIUS_KEY";
     let owner = new solanaWeb3.PublicKey("42iqZhSMk3zXUnAs1NbHEfepgs4YyemnBAt62Md2JVpY");
     
     const axiosInstance = axios.create({baseURL: heliusUrl,});
@@ -1752,12 +1776,12 @@ async function GetAssetsByOwner() {
 $('#thingButton').on('click', () => {
     console.log('Working ...');
     // InitializeSwap();
-    // SwapcNFTs();
+    SwapcNFTs();
     // ReverseSwap()
     // GetAssetsByOwner();
     // UpdateState();
     // CreateALT();
-    ExtendALT();
+    // ExtendALT();
     // ReadALT();
 });
 $('#thingButton').prop('disabled', true);
