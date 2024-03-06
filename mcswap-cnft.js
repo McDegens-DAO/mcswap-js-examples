@@ -1940,8 +1940,8 @@ async function altClose(_alt_,_helius_) {
 
 // returns the number of proofs required for a cNFT asset
 async function proofsRequired(id) {
-    if (id.length < 32) {
-      return false;
+  if (id.length < 32) {
+      return;
     }
     let connection = new solanaWeb3.Connection(conf.cluster, "confirmed");
     let axiosInstance = axios.create({
@@ -1955,13 +1955,31 @@ async function proofsRequired(id) {
         id: id
       },
     });
-    let ck_treeId = response.data.result.tree_id;
-    let ck_Proof = response.data.result.proof;
-    let ck_Root = response.data.result.root;
-    let ck_treeIdPubKey = new solanaWeb3.PublicKey(ck_treeId);
-    let treeAccount = await splAccountCompression_.ConcurrentMerkleTreeAccount.fromAccountAddress(connection, ck_treeIdPubKey, );
-    let treeAuthority = treeAccount.getAuthority();
-    return (response.data.result.proof.length - treeAccount.getCanopyDepth()); 
+    if(typeof response.data.result.tree_id == "undefined"){
+      let axiosInstance = axios.create({
+        baseURL: conf.cluster
+      });
+      let response = await axiosInstance.post(conf.cluster, {
+        jsonrpc: "2.0",
+        method: "getAssetProof",
+        id: "rpd-op-123",
+        params: {
+          id: id
+        },
+      });
+    }
+    if(typeof response.data.result.tree_id == "undefined"){
+      return false;
+    }
+    else{
+      let ck_treeId = response.data.result.tree_id;
+      let ck_Proof = response.data.result.proof;
+      let ck_Root = response.data.result.root;
+      let ck_treeIdPubKey = new solanaWeb3.PublicKey(ck_treeId);
+      let treeAccount = await splAccountCompression_.ConcurrentMerkleTreeAccount.fromAccountAddress(connection, ck_treeIdPubKey, );
+      let treeAuthority = treeAccount.getAuthority();
+      return (response.data.result.proof.length - treeAccount.getCanopyDepth());
+    }
 }
 
 
