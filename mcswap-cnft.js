@@ -1976,7 +1976,7 @@ async function proofsRequired(id) {
       let ck_Proof = response.data.result.proof;
       let ck_Root = response.data.result.root;
       let ck_treeIdPubKey = new solanaWeb3.PublicKey(ck_treeId);
-      let treeAccount = await splAccountCompression_.ConcurrentMerkleTreeAccount.fromAccountAddress(connection, ck_treeIdPubKey, );
+      let treeAccount = await solanaAccountCompression.ConcurrentMerkleTreeAccount.fromAccountAddress(connection, ck_treeIdPubKey, );
       let treeAuthority = treeAccount.getAuthority();
       return (response.data.result.proof.length - treeAccount.getCanopyDepth());
     }
